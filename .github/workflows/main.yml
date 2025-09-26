@@ -1,0 +1,30 @@
+name: CI build
+
+on: [push]
+
+jobs:
+  builds:
+    name: 'build'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        jdk: [23]
+        os: [windows-latest, ubuntu-latest]
+      fail-fast: false
+      max-parallel: 4
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java ${{ matrix.jdk }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdk }}
+      - name: works
+        run: |
+          ./mvnw clean install -Pworks
+      - name: fails
+        run: |
+          ./mvnw clean install -Pfails
